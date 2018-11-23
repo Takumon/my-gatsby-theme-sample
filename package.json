@@ -1,0 +1,12 @@
+{
+  "name": "my-gatsby-theme-sample",
+  "version": "0.0.1",
+  "main": "index.js",
+  "author": "Takumon",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "themes/*",
+    "ui-surfaces/*"
+  ]
+}
