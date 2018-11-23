@@ -3,8 +3,10 @@ import Helmet from 'react-helmet'
 import { Link,graphql } from 'gatsby'
 import get from 'lodash/get'
 
-import Bio from '../components/Bio'
-import Layout from '../components/Layout'
+// コンポーネント読み込みはgatsby-node.jsで指定したファイルパスから読み込む
+import Bio from 'gatsby-blog-component-replacement-theme--component/Bio'
+import Layout from 'gatsby-blog-component-replacement-theme--component/Layout'
+
 import { rhythm, scale } from '../utils/typography'
 
 class BlogPostTemplate extends React.Component {
@@ -38,6 +40,7 @@ class BlogPostTemplate extends React.Component {
             marginBottom: rhythm(1),
           }}
         />
+
         <Bio />
 
         <ul

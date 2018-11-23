@@ -1,5 +1,7 @@
 import React from 'react'
-import Layout from '../components/Layout'
+
+// コンポーネント読み込みはgatsby-node.jsで指定したファイルパスから読み込む
+import Layout from 'gatsby-blog-component-replacement-theme--component/Layout'
 
 class NotFoundPage extends React.Component {
   render() {

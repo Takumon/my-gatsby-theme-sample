@@ -71,31 +71,56 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
 }
 
 
-/*
- * Gatsbyテーマのビルド方法をwebpackに設定しています。
- * NPMモジュールの公開時は、(1)事前コンパイルするか、(2)コンパイル方法の設定追加 どちらかが必要です。
- * Gatsbyテーマの場合(2)が可能なので、ここで設定しています。
- */
-exports.onCreateWebpackConfig = ({ stage, loaders, actions }) => {
+// テーマ差し替え用フォルダを指定して
+// ユーザがフォルダ配下にコンポーネントを配置している場合、テーマで用意したものと差し替えるようにする
+const THEME_PREFIX = 'gatsby-blog-component-replacement-theme--component'
+const RELATIVE_DIR_PATH_OF_REPLACEMENT_COMPONETS = `./src/components/${THEME_PREFIX}`
+
+exports.onCreateWebpackConfig = ({ actions, store }) => {
+
+  // ユーザが作成したコンポーネント読み込んで
+  // エイリアスを作成する
+  const userComponents = fs
+    .readdirSync(path.resolve(RELATIVE_DIR_PATH_OF_REPLACEMENT_COMPONETS))
+    .reduce(
+      (acc, componentName) => ({
+        ...acc,
+        [`${THEME_PREFIX}/${componentName.substr(0, componentName.lastIndexOf('.'))}`]: path.resolve(
+          `${RELATIVE_DIR_PATH_OF_REPLACEMENT_COMPONETS}/${componentName}`
+        ),
+      }),
+      {}
+    )
+
+  // エイリアス設定でユーザが作成したコンポーネントを先に定義することで
+  // ユーザが作成したコンポーネントを優先的に読み込むようにする
   actions.setWebpackConfig({
-    module: {
-      rules: [
-        {
-          test: /\.js$/,
-          include: path.dirname(require.resolve('gatsby-blog-component-replacement-theme')),
-          use: [loaders.js()],
-        },
-      ],
+    resolve: {
+      alias: {
+        ...userComponents,
+        [THEME_PREFIX]: path.join(__dirname, './src/components'),
+      },
     },
   })
 }
 
+
 // ユーザがsrc/pages未作成の場合にエラーになるのを防ぐため、無ければ作成する
+// RELATIVE_DIR_PATH_OF_REPLACEMENT_COMPONETSも同様
 exports.onPreBootstrap = ({ store }) => {
   const { program } = store.getState()
-  const dir = `${program.directory}/src/pages`
 
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir)
+  const pageDir = `${program.directory}/src/pages/`
+  const componentDir = `${program.directory}/src/components/`
+  const replaceComponentDir = `${componentDir}/${THEME_PREFIX}/`
+
+  mkdir(pageDir)
+  mkdir(componentDir)
+  mkdir(replaceComponentDir)
+}
+
+function mkdir(path) {
+  if (!fs.existsSync(path)) {
+    fs.mkdirSync(path)
   }
 }
