@@ -1,5 +1,5 @@
 {
-  "name": "blog-minimal",
+  "name": "blog-override-page",
   "version": "0.0.1",
   "scripts": {
     "develop": "gatsby develop",
