@@ -1,0 +1,12 @@
+{
+  "name": "blog-minimal",
+  "version": "0.0.1",
+  "scripts": {
+    "develop": "gatsby develop",
+    "build": "gatsby build"
+  },
+  "dependencies": {
+    "gatsby": "^2.0.19",
+    "gatsby-blog-theme": "*"
+  }
+}
