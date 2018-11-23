@@ -2,12 +2,15 @@ const _ = require('lodash')
 const Promise = require('bluebird')
 const path = require('path')
 const { createFilePath } = require('gatsby-source-filesystem')
+const fs = require('fs')
+const withThemePath = require('./with-theme-path')
 
 exports.createPages = ({ graphql, actions }) => {
   const { createPage } = actions
 
   return new Promise((resolve, reject) => {
-    const blogPost = path.resolve('./src/templates/blog-post.js')
+    // withThemePathを使って、ユーザが作成したページまたはテーマで用意しているページを読み込む
+    const blogPost = withThemePath('./src/templates/blog-post.js')
     resolve(
       graphql(
         `
@@ -64,5 +67,35 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
       node,
       value,
     })
+  }
+}
+
+
+/*
+ * Gatsbyテーマのビルド方法をwebpackに設定しています。
+ * NPMモジュールの公開時は、(1)事前コンパイルするか、(2)コンパイル方法の設定追加 どちらかが必要です。
+ * Gatsbyテーマの場合(2)が可能なので、ここで設定しています。
+ */
+exports.onCreateWebpackConfig = ({ stage, loaders, actions }) => {
+  actions.setWebpackConfig({
+    module: {
+      rules: [
+        {
+          test: /\.js$/,
+          include: path.dirname(require.resolve('gatsby-blog-theme')),
+          use: [loaders.js()],
+        },
+      ],
+    },
+  })
+}
+
+// ユーザがsrc/pages未作成の場合にエラーになるのを防ぐため、無ければ作成する
+exports.onPreBootstrap = ({ store }) => {
+  const { program } = store.getState()
+  const dir = `${program.directory}/src/pages`
+
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir)
   }
 }

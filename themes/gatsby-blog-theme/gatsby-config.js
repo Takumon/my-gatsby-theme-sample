@@ -1,4 +1,7 @@
-module.exports = {
+const path = require('path')
+
+// ユーザ側からルートディレクトリを指定して、それをもとに設定の中でパスを組み立てる
+module.exports = ({ root }) => ({
   siteMetadata: {
     title: 'Gatsby Starter Blog',
     author: 'Kyle Mathews',
@@ -10,7 +13,7 @@ module.exports = {
     {
       resolve: `gatsby-source-filesystem`,
       options: {
-        path: `${__dirname}/src/pages`,
+        path: `src/pages`,
         name: 'pages',
       },
     },
@@ -62,8 +65,19 @@ module.exports = {
     {
       resolve: 'gatsby-plugin-typography',
       options: {
-        pathToConfigModule: 'src/utils/typography',
+        // typographyはテーマで用意した資産を使うのでrootからの相対パスを指定する
+        pathToConfigModule: path.relative(
+          root,
+          require.resolve('./src/utils/typography')
+        ),
+      },
+    },
+    // ページとして、テーマで用意した資産を読み込む
+    {
+      resolve: `gatsby-plugin-page-creator`,
+      options: {
+        path: require.resolve(`./src/pages`),
       },
     },
   ],
-}
+})

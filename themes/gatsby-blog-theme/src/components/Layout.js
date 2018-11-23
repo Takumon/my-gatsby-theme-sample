@@ -1,3 +1,6 @@
+/* eslint-disable */
+// ↑ellintのチェックを抑止
+// そうしないと__PATH_PREFIX__で怒られる
 import React from 'react'
 import { Link } from 'gatsby'
 
